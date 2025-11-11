@@ -185,3 +185,9 @@ async function run() {
 
 run().catch(console.dir);
 
+// Default Route
+app.get("/", (req, res) => {
+    res.send("🔥 TravelEase Backend Server Running...");
+});
+
+
