@@ -145,3 +145,22 @@ async function run() {
             }
         });
 
+        //  Book Vehicle
+        app.post("/book", async (req, res) => {
+            try {
+                const data = req.body;
+
+                data.bookingDate = new Date();
+
+                const result = await bookingsCollection.insertOne(data);
+
+                res.json({
+                    success: true,
+                    message: "Booking Successful",
+                    insertedId: result.insertedId,
+                });
+            } catch (error) {
+                res.status(500).json({ message: "Booking failed" });
+            }
+        });
+
