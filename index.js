@@ -190,4 +190,7 @@ app.get("/", (req, res) => {
     res.send("🔥 TravelEase Backend Server Running...");
 });
 
-
+// Start Server
+app.listen(port, () => {
+    console.log(`🚀 Server running on port ${port}`);
+});
