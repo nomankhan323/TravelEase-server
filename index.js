@@ -1,7 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -31,9 +31,8 @@ async function run() {
 
         console.log("✅ MongoDB Connected Successfully!");
 
-
-        //  All Vehicles 
-        app.get('/vehicles', async (req, res) => {
+        //  Get All Vehicles
+        app.get("/vehicles", async (req, res) => {
             try {
                 const { category, location, sort } = req.query;
 
@@ -43,8 +42,8 @@ async function run() {
                 if (category) query.category = category;
                 if (location) query.location = location;
 
-                if (sort === "lowToHigh") sortOption.pricePerDay = 1;
-                if (sort === "highToLow") sortOption.pricePerDay = -1;
+                if (sort === "lowToHigh") sortOption.price = 1;
+                if (sort === "highToLow") sortOption.price = -1;
 
                 const vehicles = await vehiclesCollection
                     .find(query)
@@ -52,50 +51,50 @@ async function run() {
                     .toArray();
 
                 res.json(vehicles);
-
             } catch (error) {
+                console.error("Error:", error);
                 res.status(500).json({ message: "Error fetching vehicles" });
             }
         });
 
-
-        // Single Vehicle Details
-        app.get('/vehicle/:id', async (req, res) => {
+        //  Single Vehicle Details
+        app.get("/vehicle/:id", async (req, res) => {
             try {
                 const id = req.params.id;
-                const vehicle = await vehiclesCollection.findOne({ _id: new ObjectId(id) });
+                const vehicle = await vehiclesCollection.findOne({
+                    _id: new ObjectId(id),
+                });
+
                 res.json(vehicle);
             } catch (error) {
                 res.status(500).json({ message: "Error fetching vehicle" });
             }
         });
 
-
-        //  Add Vehicle
-        app.post('/add-vehicle', async (req, res) => {
+        //  Add a Vehicle
+        app.post("/add-vehicle", async (req, res) => {
             try {
-                const vehicleData = req.body;
-                vehicleData.createdAt = new Date();
+                const data = req.body;
 
-                const result = await vehiclesCollection.insertOne(vehicleData);
+                data.createdAt = new Date();
 
-                res.status(200).json({
+                const result = await vehiclesCollection.insertOne(data);
+
+                res.json({
                     success: true,
-                    message: "Vehicle Added Successfully!",
-                    insertedId: result.insertedId
+                    message: "Vehicle Added Successfully",
+                    insertedId: result.insertedId,
                 });
-
             } catch (error) {
                 res.status(500).json({
                     success: false,
-                    message: "Failed to add vehicle"
+                    message: "Failed to add vehicle",
                 });
             }
         });
 
-
-        //  My Vehicles 
-        app.get('/my-vehicles/:email', async (req, res) => {
+        //  Get My Vehicles
+        app.get("/my-vehicles/:email", async (req, res) => {
             try {
                 const email = req.params.email;
                 const myVehicles = await vehiclesCollection
@@ -103,15 +102,13 @@ async function run() {
                     .toArray();
 
                 res.json(myVehicles);
-
             } catch (error) {
                 res.status(500).json({ message: "Error fetching user's vehicles" });
             }
         });
 
-
         //  Update Vehicle
-        app.put('/update-vehicle/:id', async (req, res) => {
+        app.put("/update-vehicle/:id", async (req, res) => {
             try {
                 const id = req.params.id;
                 const updatedData = req.body;
@@ -119,60 +116,56 @@ async function run() {
                 const filter = { _id: new ObjectId(id) };
                 const updateDoc = { $set: updatedData };
 
-                const result = await vehiclesCollection.updateOne(filter, updateDoc);
+                await vehiclesCollection.updateOne(filter, updateDoc);
 
                 res.json({
                     success: true,
-                    message: "Vehicle updated successfully"
+                    message: "Vehicle Updated Successfully",
                 });
-
             } catch (error) {
                 res.status(500).json({ message: "Failed to update vehicle" });
             }
         });
 
-
         //  Delete Vehicle
-        app.delete('/delete-vehicle/:id', async (req, res) => {
+        app.delete("/delete-vehicle/:id", async (req, res) => {
             try {
                 const id = req.params.id;
-                const filter = { _id: new ObjectId(id) };
 
-                const result = await vehiclesCollection.deleteOne(filter);
+                await vehiclesCollection.deleteOne({
+                    _id: new ObjectId(id),
+                });
 
                 res.json({
                     success: true,
-                    message: "Vehicle deleted successfully"
+                    message: "Vehicle Deleted Successfully",
                 });
-
             } catch (error) {
                 res.status(500).json({ message: "Failed to delete vehicle" });
             }
         });
 
-
         //  Book Vehicle
-        app.post('/book', async (req, res) => {
+        app.post("/book", async (req, res) => {
             try {
-                const bookingData = req.body;
-                bookingData.bookingDate = new Date();
+                const data = req.body;
 
-                const result = await bookingsCollection.insertOne(bookingData);
+                data.bookingDate = new Date();
+
+                const result = await bookingsCollection.insertOne(data);
 
                 res.json({
                     success: true,
-                    message: "Booking added successfully",
-                    insertedId: result.insertedId
+                    message: "Booking Successful",
+                    insertedId: result.insertedId,
                 });
-
             } catch (error) {
                 res.status(500).json({ message: "Booking failed" });
             }
         });
 
-
-        //  My Bookings
-        app.get('/my-bookings/:email', async (req, res) => {
+        //  Get My Bookings
+        app.get("/my-bookings/:email", async (req, res) => {
             try {
                 const email = req.params.email;
 
@@ -181,13 +174,10 @@ async function run() {
                     .toArray();
 
                 res.json(bookings);
-
             } catch (error) {
-                res.status(500).json({ message: "Error fetching bookings" });
+                res.status(500).json({ message: "Failed to fetch bookings" });
             }
         });
-
-
     } catch (err) {
         console.error("❌ Connection Error:", err);
     }
@@ -195,12 +185,10 @@ async function run() {
 
 run().catch(console.dir);
 
-
-//  Default Route
-app.get('/', (req, res) => {
+// Default Route
+app.get("/", (req, res) => {
     res.send("🔥 TravelEase Backend Server Running...");
 });
-
 
 // Start Server
 app.listen(port, () => {
