@@ -56,3 +56,18 @@ async function run() {
                 res.status(500).json({ message: "Error fetching vehicles" });
             }
         });
+
+        //  Single Vehicle Details
+        app.get("/vehicle/:id", async (req, res) => {
+            try {
+                const id = req.params.id;
+                const vehicle = await vehiclesCollection.findOne({
+                    _id: new ObjectId(id),
+                });
+
+                res.json(vehicle);
+            } catch (error) {
+                res.status(500).json({ message: "Error fetching vehicle" });
+            }
+        });
+
