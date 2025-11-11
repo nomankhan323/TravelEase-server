@@ -164,3 +164,24 @@ async function run() {
             }
         });
 
+        //  Get My Bookings
+        app.get("/my-bookings/:email", async (req, res) => {
+            try {
+                const email = req.params.email;
+
+                const bookings = await bookingsCollection
+                    .find({ userEmail: email })
+                    .toArray();
+
+                res.json(bookings);
+            } catch (error) {
+                res.status(500).json({ message: "Failed to fetch bookings" });
+            }
+        });
+    } catch (err) {
+        console.error("❌ Connection Error:", err);
+    }
+}
+
+run().catch(console.dir);
+
