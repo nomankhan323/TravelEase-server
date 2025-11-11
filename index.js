@@ -92,3 +92,38 @@ async function run() {
                 });
             }
         });
+
+        //  Get My Vehicles
+        app.get("/my-vehicles/:email", async (req, res) => {
+            try {
+                const email = req.params.email;
+                const myVehicles = await vehiclesCollection
+                    .find({ userEmail: email })
+                    .toArray();
+
+                res.json(myVehicles);
+            } catch (error) {
+                res.status(500).json({ message: "Error fetching user's vehicles" });
+            }
+        });
+
+        //  Update Vehicle
+        app.put("/update-vehicle/:id", async (req, res) => {
+            try {
+                const id = req.params.id;
+                const updatedData = req.body;
+
+                const filter = { _id: new ObjectId(id) };
+                const updateDoc = { $set: updatedData };
+
+                await vehiclesCollection.updateOne(filter, updateDoc);
+
+                res.json({
+                    success: true,
+                    message: "Vehicle Updated Successfully",
+                });
+            } catch (error) {
+                res.status(500).json({ message: "Failed to update vehicle" });
+            }
+        });
+
