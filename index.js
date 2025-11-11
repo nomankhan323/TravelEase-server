@@ -127,3 +127,21 @@ async function run() {
             }
         });
 
+        //  Delete Vehicle
+        app.delete("/delete-vehicle/:id", async (req, res) => {
+            try {
+                const id = req.params.id;
+
+                await vehiclesCollection.deleteOne({
+                    _id: new ObjectId(id),
+                });
+
+                res.json({
+                    success: true,
+                    message: "Vehicle Deleted Successfully",
+                });
+            } catch (error) {
+                res.status(500).json({ message: "Failed to delete vehicle" });
+            }
+        });
+
