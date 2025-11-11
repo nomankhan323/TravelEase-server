@@ -71,3 +71,24 @@ async function run() {
             }
         });
 
+        //  Add a Vehicle
+        app.post("/add-vehicle", async (req, res) => {
+            try {
+                const data = req.body;
+
+                data.createdAt = new Date();
+
+                const result = await vehiclesCollection.insertOne(data);
+
+                res.json({
+                    success: true,
+                    message: "Vehicle Added Successfully",
+                    insertedId: result.insertedId,
+                });
+            } catch (error) {
+                res.status(500).json({
+                    success: false,
+                    message: "Failed to add vehicle",
+                });
+            }
+        });
