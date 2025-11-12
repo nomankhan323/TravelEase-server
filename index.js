@@ -93,12 +93,12 @@ async function run() {
             }
         });
 
-        //  Get My Vehicles
+        // My Vehicles 
         app.get("/my-vehicles/:email", async (req, res) => {
             try {
                 const email = req.params.email;
                 const myVehicles = await vehiclesCollection
-                    .find({ userEmail: email })
+                    .find({ userEmail: new RegExp(`^${email}$`, "i") }) // ignore case
                     .toArray();
 
                 res.json(myVehicles);
@@ -106,6 +106,7 @@ async function run() {
                 res.status(500).json({ message: "Error fetching user's vehicles" });
             }
         });
+
 
         //  Update Vehicle
         app.put("/update-vehicle/:id", async (req, res) => {
